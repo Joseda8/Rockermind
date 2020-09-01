@@ -1,0 +1,46 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="{% static 'rockermind/style/layout.css' %}" rel="stylesheet">
+        <link rel="shortcut icon" type="image/png" href="{% static 'rockermind/images/favicon.ico' %}"/>
+        {% block head %}{% endblock %}
+    </head>
+    <body style="background-image: url('{% static 'rockermind/images/background.jpg' %}');
+    background-repeat: no-repeat; background-attachment: fixed; background-size: 100% 100%;">
+
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+        <a href="{% url 'rockermind:index' %}">
+            <img id="logo" src="{% static 'rockermind/images/logo_white.png' %}" alt="Rockermind" 
+            style="width: 200px;">
+        </a>
+        
+        <div id="container" >
+
+            <!-- Toolbar -->
+            <div class="row" id="index_bar">
+                {% block options %}{% endblock %}
+            </div>
+
+            {% block body %}{% endblock %}
+
+            <div class="footer">
+                <div class="row">
+                    <div class="col">
+                        <p>José Daniel Montoya Salazar</p>
+                    </div>
+                    <div class="col">
+                        <p>Email: jd.montoya.s8@gmail.com</p>
+                    </div>
+                </div>    
+            </div>
+
+        </div>
+    </body>
+</html>

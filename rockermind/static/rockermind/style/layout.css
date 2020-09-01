@@ -1,0 +1,119 @@
+body {
+  background-color: #1f1f21;
+}
+
+#logo, .carousel_img {
+  display: block;
+  margin: auto;
+}
+
+#container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-flow: column;
+  margin: 25px;
+}
+#container #index_bar div {
+  padding: 15px;
+  background-color: #7d7d7d;
+  color: #fffff5;
+}
+#container #motivation, #container #sign_up_container {
+  padding: 15px;
+  color: #fffff5;
+}
+#container a:hover {
+  font-weight: bold;
+  color: #fffff5;
+}
+#container a {
+  color: #fffff5;
+}
+#container .footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  padding-top: 20px;
+  padding-bottom: 5px;
+  color: #fffff5;
+  background: #0E1427;
+  text-align: center;
+}
+#container .footer p {
+  font-size: small;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Button used to open the contact form - fixed at the bottom of the page */
+.open-button {
+  background-color: #555;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  position: fixed;
+  bottom: 23px;
+  right: 28px;
+  width: 280px;
+}
+
+/* The popup form - hidden by default */
+.form-popup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 15px;
+  border: 3px solid #f1f1f1;
+  z-index: 9;
+}
+
+/* Add styles to the form container */
+.form-container {
+  max-width: 300px;
+  padding: 10px;
+  background-color: white;
+}
+
+/* Full-width input fields */
+.form-container input[type=text], .form-container input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+}
+
+/* When the inputs get focus, do something */
+.form-container input[type=text]:focus, .form-container input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Set a style for the submit/login button */
+.form-container .btn {
+  background-color: #4FC9EE;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom: 10px;
+  opacity: 0.8;
+}
+
+#close_login {
+  background-color: #0E1427;
+  border-color: #0E1427;
+}
+
+/* Add some hover effects to buttons */
+.form-container .btn:hover, .open-button:hover {
+  opacity: 1;
+}
+
+/*# sourceMappingURL=layout.css.map */

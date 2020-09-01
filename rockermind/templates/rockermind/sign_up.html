@@ -1,0 +1,40 @@
+{% extends "rockermind/welcome_template.html" %}
+
+{% load static %}
+
+{% block welcome_body %}
+
+<div id="sign_up_container">
+    <form style="margin-top: 30px;" action="{% url 'rockermind:sign_up' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h1>I'm ready to become a 
+            <select id="role_sign_up" name="role">
+                <option value="" disabled selected></option>
+                {% for role in roles %}
+                    <option value={{ role }}>{{ role }}</option>
+                {% endfor %}
+            </select>
+        </h1>
+        <br>
+        <br>
+        <label>Username</label>
+        <input class="form-control" type="text" autofocus autocomplete="off" id="username"
+        name="username" placeholder="Username">
+        <br>
+        <label>Password</label>
+        <input class="form-control" type="password" autofocus autocomplete="off" id="password"
+        name="password" placeholder="Password">
+
+        <div id="sign_up_form">
+
+        </div>
+        
+        <button class="btn btn-primary btn-lg btn-block" id="sign_up_btn"
+                style="margin-top: 50px; margin-bottom: 80px;">
+                Sign up</button>
+    </form>
+
+    
+</div>
+
+{% endblock %}

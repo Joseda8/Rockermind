@@ -1,0 +1,97 @@
+{% extends "rockermind/index_template.html" %}
+
+{% load static %}
+
+{% block title %}
+Rockermind
+{% endblock %}
+
+{% block head %}
+  <script src="{% static 'rockermind/javascript/welcome.js' %}"></script>
+  
+  {% if message %}
+  <script>
+    alert("{{message}}");
+  </script>
+  {% endif %}
+{% endblock %}
+
+
+{% block options %}
+<div class="col d-flex justify-content-center">
+    <a href="{% url 'rockermind:motivation' %}">Motivation</a>
+</div>
+<div class="col d-flex justify-content-center">
+    <a style="cursor:pointer;" data-toggle="modal" data-target="#cartModal">
+        Show me a band</a>
+</div>
+<div class="col d-flex justify-content-center">
+    <a style="cursor:pointer;" onclick="openForm()">Sign in</a>
+</div>
+<div class="col d-flex justify-content-center">
+    <a href="{% url 'rockermind:sign_up' %}">Sign up</a>
+</div>
+{% endblock %}
+
+{% block body %}
+
+<div class="form-popup" id="myForm">
+    <form action="{% url 'rockermind:index' %}" method="post" class="form-container">
+        {% csrf_token %}
+        <h1>Login</h1>
+
+        <label for="email"><b>Username</b></label>
+        <input type="text" placeholder="Enter Username" name="username" required>
+
+        <label for="psw"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" name="password" required>
+
+        <select class="form-control" name="role" style="margin-bottom: 25px;">
+            <option value="Fan">Fan</option>
+            <option value="Rocker">Rocker</option>
+            <option value="Owner">Place Owner</option>
+        </select>
+
+        <button type="submit" class="btn">Login</button>
+        <button type="button" class="btn cancel" id="close_login" onclick="closeForm()">Close</button>
+    </form>
+</div>
+
+{% block welcome_body %}
+{% endblock %}
+
+<!-- Pop-Up -->
+<div class="container">
+  <div class="modal fade" id="cartModal" role="dialog">
+    <div class="modal-dialog">
+          <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Panucci's Pizza</h4>
+        </div>
+        <div class="modal-body">
+          <h3 id="modal_info" style="font-weight: bold;">Products in your cart: </h3>
+          <br>
+          <br>
+
+          <div id="buy_resume">
+          </div>
+          
+        </div>
+        <div class="modal-footer">
+          <button id="clear_cart_btn" type="button" class="btn btn-default" data-dismiss="modal"
+          style="background-color: #2fd6d6; border-color: #2fd6d6;">Clear cart</button>
+
+          <button type="button" class="btn btn-default" data-dismiss="modal"
+          style="margin-left: 210px;">Close</button>
+
+          <button id="cart_view_btn" class="btn btn-default"
+          style="background-color: #e93015; border-color: #e93015;">Accept</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+<!-- Pop-Up Finish-->
+
+
+{% endblock %}
