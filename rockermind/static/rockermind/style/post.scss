@@ -1,0 +1,17 @@
+$color_background: #1f1f21;
+$second_color: #7d7d7d;
+$third_color: #0E1427;
+$fourth_color: #4FC9EE;
+$text_color_light: #fffff5;
+
+.post {
+    background-color: $text_color_light;
+    padding: 25px;
+    margin-top: 25px;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+body {
+    padding-bottom: 50px;
+}
