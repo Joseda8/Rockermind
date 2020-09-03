@@ -1,0 +1,97 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}{{ band_name }}{% endblock %}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="{% static 'rockermind/style/layout.css' %}" rel="stylesheet">
+        <link rel="shortcut icon" type="image/png" href="{% static 'rockermind/images/favicon.ico' %}"/>
+        {% block head %}{% endblock %}
+    </head>
+    <body style="background-image: url('{% static 'rockermind/images/background.jpg' %}');
+    background-repeat: no-repeat; background-attachment: fixed; background-size: 100% 100%;">
+
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+        <a href="{% url 'rockermind:index' %}">
+            <img id="logo" src="{% static 'rockermind/images/logo_white.png' %}" alt="Rockermind" 
+            style="width: 200px;">
+        </a>
+        
+        <div id="container" >
+            
+            <br>
+            <div id="container_bandPage" style="margin-bottom: 50px;">
+                <h1>{{ band_name }}</h1>
+                <hr>
+                <img src="data:image/png;base64,{{ band_logo }}" alt="{{ band_name }}" style="width: 200px;">
+                <hr>
+                <h5>{{ band_name }} is a {{ genre }} band</h5>
+                <hr>
+
+                <div class="top-content">
+                    <div class="container">
+                        <div class="row" style="margin-bottom: 75px;">
+                            <div class="col col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+                                <div id="carousel-example" class="carousel slide">
+                                    <ol class="carousel-indicators">
+                                        <li data-target="#carousel-example" data-slide-to="0" class="active"></li>
+                                        <li data-target="#carousel-example" data-slide-to="1"></li>
+                                        <li data-target="#carousel-example" data-slide-to="2"></li>
+                                    </ol>
+                                    <div class="carousel-inner">
+                                        <div class="carousel-item active">
+                                            <div class="embed-responsive embed-responsive-16by9">
+                                                <iframe class="embed-responsive-item" src="{{ song_1 }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                            </div>
+                                        </div>
+
+                                        {% for song in songs %}
+                                            <div class="carousel-item">
+                                                <div class="embed-responsive embed-responsive-16by9">
+                                                    <iframe class="embed-responsive-item" src="{{ song }}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <a class="carousel-control-prev" href="#carousel-example" role="button" data-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                    <a class="carousel-control-next" href="#carousel-example" role="button" data-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="sr-only">Next</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h5><label>Biography</label></h5>
+                <p>{{ biography }}
+                    <img src="data:image/png;base64,{{ band_img }}" alt="{{ band_name }}" style="width: 50%; display: block; margin-left: auto; margin-right: auto; margin-top:30px;">
+                </p>
+
+            </div>
+            
+
+            {% block body %}{% endblock %}
+
+            <div class="footer">
+                <div class="row">
+                    <div class="col">
+                        <p>José Daniel Montoya Salazar</p>
+                    </div>
+                    <div class="col">
+                        <p>Email: jd.montoya.s8@gmail.com</p>
+                    </div>
+                </div>    
+            </div>
+
+        </div>
+    </body>
+</html>

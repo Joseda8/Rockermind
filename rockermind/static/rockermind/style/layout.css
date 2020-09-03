@@ -18,7 +18,7 @@ body {
   background-color: #7d7d7d;
   color: #fffff5;
 }
-#container #motivation, #container #sign_up_container {
+#container #motivation, #container #sign_up_container, #container #container_bandPage {
   padding: 15px;
   color: #fffff5;
 }
@@ -28,6 +28,13 @@ body {
 }
 #container a {
   color: #fffff5;
+}
+#container .band_ref:hover {
+  font-weight: bold;
+  color: black;
+}
+#container .band_ref {
+  color: black;
 }
 #container .footer {
   position: fixed;

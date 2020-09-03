@@ -1,0 +1,93 @@
+{% extends "rockermind/index_template.html" %}
+
+{% load static %}
+
+{% block title %}
+Rockermind
+{% endblock %}
+
+{% block head %}
+
+<link href="{% static 'rockermind/style/post.css' %}" rel="stylesheet">
+<script src="{% static 'rockermind/javascript/owner.js' %}"></script>
+  
+  {% if message %}
+  <script>
+    alert("{{message}}");
+  </script>
+  {% endif %}
+{% endblock %}
+
+
+{% block options %}
+
+<div class="col d-flex justify-content-center">
+  <form>
+    <input class="form-control" type="text" autofocus autocomplete="off" id="band_to_search"
+    name="band_to_search" placeholder="Band name">
+    <button class="btn btn-primary btn-md btn-block" id="search_btn"
+    style="margin-top: 5px; width: 200px; background-color: #262926; border-color: #262926;">Search</button>
+  </form>
+</div>
+
+<div class="col d-flex justify-content-center">
+  <a href="{% url 'rockermind:events' %}">Events</a>
+</div>
+
+<div class="col d-flex justify-content-center">
+  <a href="{% url 'rockermind:profile' %}">Profile</a>
+</div>
+
+<div class="col d-flex justify-content-center">
+  <a style="cursor:pointer;" data-toggle="modal" data-target="#cartModal">
+    <img id="logo" src="{% static 'rockermind/images/notification.png' %}" alt="Notifications" 
+    style="width: 32px;">
+  </a>
+</div>
+
+<div class="col d-flex justify-content-center">
+    <a href="{% url 'rockermind:logout' %}">Logout</a>
+</div>
+{% endblock %}
+
+{% block body %}
+
+
+{% block owner_body %}
+{% endblock %}
+
+<!-- Pop-Up -->
+<div class="container">
+  <div class="modal fade" id="cartModal" role="dialog">
+    <div class="modal-dialog">
+          <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Panucci's Pizza</h4>
+        </div>
+        <div class="modal-body">
+          <h3 id="modal_info" style="font-weight: bold;">Products in your cart: </h3>
+          <br>
+          <br>
+
+          <div id="buy_resume">
+          </div>
+          
+        </div>
+        <div class="modal-footer">
+          <button id="clear_cart_btn" type="button" class="btn btn-default" data-dismiss="modal"
+          style="background-color: #2fd6d6; border-color: #2fd6d6;">Clear cart</button>
+
+          <button type="button" class="btn btn-default" data-dismiss="modal"
+          style="margin-left: 210px;">Close</button>
+
+          <button id="cart_view_btn" class="btn btn-default"
+          style="background-color: #e93015; border-color: #e93015;">Accept</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+<!-- Pop-Up Finish-->
+
+
+{% endblock %}

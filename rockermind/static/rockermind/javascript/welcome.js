@@ -73,9 +73,7 @@ function check_fields_rockstar_sign_up(){
     && band_name.value.length > 0 && band_name.value.length <= 30
     && band_info.value.length > 0 && band_info.value.length <= 1024
     && parseInt(localStorage.getItem("files")) >= 2
-    && song_1.value.length > 0 && song_1.value.length <= 250
-    && song_2.value.length > 0 && song_2.value.length <= 250
-    && song_3.value.length > 0 && song_3.value.length <= 250) {
+    && song_1.value.length <= 250 && song_2.value.length <= 250 && song_3.value.length <= 250) {
     submit.disabled = false;
   }else{
     submit.disabled = true;

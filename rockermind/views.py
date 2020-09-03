@@ -6,21 +6,32 @@ from django.core.files.storage import FileSystemStorage
 from django.urls import reverse
 
 from .models import Genre, Role, MyUser, Fan, Rocker, Owner
+import time
+import json
+import random
+import base64
+
+def render_page_by_role(request):
+    try:
+        current_user_role = MyUser.objects.filter(user=request.user).first().role.role
+    except:
+        pass
+    if not request.user.is_authenticated:
+        return render(request, "rockermind/index.html", {"message": None})
+    elif(current_user_role=="Fan"):
+        pass
+    elif(current_user_role=="Rockstar"):
+        pass
+    elif(current_user_role=="Owner"):
+        return render(request, "rockermind/owner.html")
 
 # Create your views here.
 def index(request):
-
-    if not request.user.is_authenticated:
-        return render(request, "rockermind/index.html", {"message": None})
 
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
         role = request.POST["role"]
-
-        print(f"Username: {username}")
-        print(f"Password: {password}")
-        print(f"Role: {role}")
         
         user = authenticate(request, username=username, password=password)
         if user is not None:
@@ -28,12 +39,18 @@ def index(request):
             if(myUser.role.role!=role):
                 return render(request, "rockermind/index.html", {"message": f"User {username} exist but the role is not {role}"})
             login(request, user)
-            return render(request, "rockermind/index_template.html")
+
+            if(role=="Fan"):
+                return render(request, "rockermind/index_template.html")
+            elif(role=="Rockstar"):
+                return render(request, "rockermind/index_template.html")
+            elif(role=="Owner"):
+                return render(request, "rockermind/owner.html")
+            
         else:
             return render(request, "rockermind/index.html", {"message": f"The user {username} or its password are wrong"})
-
-    return render(request, "rockermind/index.html", {
-        "message": None})
+    else:
+        return render_page_by_role(request)
 
 def motivation(request):
     return render(request, "rockermind/motivation.html")
@@ -79,6 +96,13 @@ def sign_up(request):
 
                 genre = Genre.objects.filter(genre=band_genre).first()
 
+                if(song_1 == ""):
+                    song_1 = "NOT_SONG"
+                if(song_2 == ""):
+                    song_2 = "NOT_SONG"
+                if(song_3 == ""):
+                    song_3 = "NOT_SONG"
+
                 new_rocker = Rocker(user=new_myUser, band_name=band_name, band_img=band_img, band_logo=band_logo,
                 genres=genre, biography=band_info, url_song_1=song_1, url_song_2=song_2, url_song_3=song_3)
                 new_rocker.save()
@@ -100,6 +124,9 @@ def sign_up(request):
         "roles": roles
     })
 
+def do_logout(request):
+    logout(request)
+    return render_page_by_role(request)
 
 def get_genres(request):
     genres = Genre.objects.all()
@@ -110,3 +137,106 @@ def get_genres(request):
     return JsonResponse({
         "genres": data
     })
+
+def search_band(request):
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    band_to_search = body['band_to_search']
+
+    all_bands = Rocker.objects.all()
+    similar_bands = []
+
+    for band in all_bands:
+        if(band_to_search in band.band_name):
+            similar_bands.append(band)
+
+    bands_to_send = []
+    for band in similar_bands:
+        bands_to_send.append({"band_name": band.band_name, 
+            "band_logo": base64.b64encode(band.band_logo.read()).decode('utf-8'),
+            "band_genre": band.genres.genre,
+            "band_id": band.id
+            })
+
+    return JsonResponse({
+        "bands": bands_to_send
+    })
+
+def events(request):
+    print("EVENTS")
+    return render_page_by_role(request)
+
+def profile(request):
+    print("PROFILE")
+    return render_page_by_role(request)
+
+
+def get_bands(request):
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    bands_save = body['bands_save']
+
+    bands = Rocker.objects.all()
+    len_bands = len(bands)
+
+    start = int(request.GET.get("start") or 0)
+    end = int(request.GET.get("end") or (start + 9))
+
+    number_posts = end-start+1
+    bands_to_send_index = []
+    i = 0
+    while(i<number_posts):
+        rand_num = random.randint(0, len_bands-1)
+        if(not(rand_num in bands_to_send_index)):
+            bands_to_send_index.append(rand_num)
+            i+=1
+
+    bands_to_send = []
+    for band in bands_to_send_index:
+        if(not(bands[band].band_name in bands_save)):
+            bands_to_send.append({"band_name": bands[band].band_name, 
+            "band_logo": base64.b64encode(bands[band].band_logo.read()).decode('utf-8'),
+            "band_genre": bands[band].genres.genre,
+            "band_id": bands[band].id
+            })
+
+    return JsonResponse({
+        "bands": bands_to_send
+})
+
+def posts(request):
+    start = int(request.GET.get("start") or 0)
+    end = int(request.GET.get("end") or (start + 9))
+
+    # Generate list of posts
+    data = []
+    for i in range(start, end + 1):
+        data.append(f"Post #{i}")
+
+    # Return list of posts
+    return JsonResponse({
+        "posts": data,
+})
+
+
+def band_page(request, band_to_look):
+    band = Rocker.objects.filter(id=band_to_look).first()
+
+    songs_to_analize = [band.url_song_1, band.url_song_2, band.url_song_3]
+    songs = []
+    for song in songs_to_analize:
+        if(song!="NOT_SONG"):
+            songs.append(song.replace("watch?v=", "embed/"))
+
+    song_1 = songs[0]
+    songs.remove(songs[0])
+
+    return render(request, "rockermind/band_page.html", {
+        "band_name": band.band_name,
+        "biography": band.biography,
+        "genre": band.genres,
+        "band_logo": base64.b64encode(band.band_logo.read()).decode('utf-8'),
+        "band_img": base64.b64encode(band.band_img.read()).decode('utf-8'),
+        "song_1": song_1,
+        "songs": songs
+        })

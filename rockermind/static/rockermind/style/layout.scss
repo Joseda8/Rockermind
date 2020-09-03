@@ -25,7 +25,7 @@ body{
         color: $text_color_light;
     }
 
-    #motivation, #sign_up_container {
+    #motivation, #sign_up_container, #container_bandPage {
         padding: 15px;
         color: $text_color_light;
     }
@@ -37,6 +37,15 @@ body{
 
     a{
         color: $text_color_light;
+    }
+
+    .band_ref:hover{
+      font-weight: bold;
+      color: black;
+    }
+
+    .band_ref{
+      color: black;
     }
 
     .footer {
