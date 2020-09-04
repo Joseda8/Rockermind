@@ -1,0 +1,60 @@
+{% extends "rockermind/owner_template.html" %}
+
+{% load static %}
+
+{% block owner_head %}
+<script src="{% static 'rockermind/javascript/owner_events.js' %}"></script>
+{% endblock %}
+
+
+{% block owner_body %}
+
+<div class="post" id="events_form" style="margin-top:50px; margin-bottom: 50px;">
+    <form action="{% url 'rockermind:new_event' %}" method="post">
+        {% csrf_token %}
+        <h1>Create event</h1>
+        <br>
+        <label>Event date and time</label>
+        <input class="form-control" type="datetime-local" autofocus autocomplete="off" id="event_date"
+        name="date" placeholder="Datetime">
+        <br>
+
+        <label>Cost</label>
+        <input class="form-control" type="number" step="any" name="cost" id="event_cost" placeholder="Cost">
+        <br>
+
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="checkbox" class="form-check-input" name="adults">
+                Adults only
+            </label>
+        </div>
+        <br>
+
+        <label>Bands</label>
+        <select multiple class="form-control" name="bands" id="event_bands">
+            {% for band in bands %}
+                <option value={{ band.band_id }}>{{ band.band_name }}</option>
+            {% endfor %}
+        </select>
+        <br>
+
+        <label>About the event</label>
+        <textarea class="form-control" name="info" placeholder="Information about the event" rows="4" id="event_info"></textarea>
+        
+        <button class="btn btn-primary btn-lg btn-block" id="new_event_btn"
+                style="margin-top: 50px; margin-bottom: 10px; background-color: #0E1427; border-color: #0E1427;">
+                Create event</button>
+    </form>
+</div>
+
+
+{% for event in events %}
+    <div class="post" style="margin-bottom: 25px;">
+        {{ event }}
+    </div>
+{% endfor %}
+
+
+
+{% endblock %}

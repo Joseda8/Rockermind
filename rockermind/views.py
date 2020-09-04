@@ -5,11 +5,12 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.core.files.storage import FileSystemStorage
 from django.urls import reverse
 
-from .models import Genre, Role, MyUser, Fan, Rocker, Owner
+from .models import Genre, Role, MyUser, Fan, Rocker, Owner, Event, Band_by_event
 import time
 import json
 import random
 import base64
+import datetime
 
 def render_page_by_role(request):
     try:
@@ -23,7 +24,7 @@ def render_page_by_role(request):
     elif(current_user_role=="Rockstar"):
         pass
     elif(current_user_role=="Owner"):
-        return render(request, "rockermind/owner.html")
+        return render(request, "rockermind/owner.html", {"message": None})
 
 # Create your views here.
 def index(request):
@@ -163,8 +164,40 @@ def search_band(request):
     })
 
 def events(request):
-    print("EVENTS")
-    return render_page_by_role(request)
+    all_bands = Rocker.objects.all()
+    all_events = Event.objects.all()
+    bands = []
+    events = []
+
+    for band in all_bands:
+        bands.append({"band_name": band.band_name, "band_id": band.id})
+
+    for event in all_events:
+        event_bands_all = event.bands.all()
+        event_bands = []
+
+        for band in event_bands_all:
+            event_bands.append({
+                "band_name": band.band.band_name,
+                "band_id": band.band.id
+            })
+        events.append({
+            "place_name": event.place.place_name, 
+            "place_img": base64.b64encode(event.place.place_img.read()).decode('utf-8'),
+            "date": f"{event.date.day}/{event.date.month}/{event.date.year}",
+            "time": f"{event.time.hour}:{event.time.minute}",
+            "cost": event.cost,
+            "adults": event.adult,
+            "info": event.info,
+            "is_confirmed": event.is_confirmed,
+            "bands": event_bands
+            })
+
+    return render(request, "rockermind/owner_events.html", {
+        "message": None,
+        "bands": bands,
+        "events": events
+        })
 
 def profile(request):
     print("PROFILE")
@@ -204,19 +237,10 @@ def get_bands(request):
         "bands": bands_to_send
 })
 
-def posts(request):
-    start = int(request.GET.get("start") or 0)
-    end = int(request.GET.get("end") or (start + 9))
 
-    # Generate list of posts
-    data = []
-    for i in range(start, end + 1):
-        data.append(f"Post #{i}")
-
-    # Return list of posts
-    return JsonResponse({
-        "posts": data,
-})
+def follower(request, band_to_follow):
+    print(band_to_follow)
+    return render_page_by_role(request)
 
 
 def band_page(request, band_to_look):
@@ -231,6 +255,13 @@ def band_page(request, band_to_look):
     song_1 = songs[0]
     songs.remove(songs[0])
 
+    current_user_role = MyUser.objects.filter(user=request.user).first().role.role
+    is_user = None
+    is_follower = None
+    if(current_user_role=="Fan"):
+        is_user = True
+        is_follower = "Follow"
+
     return render(request, "rockermind/band_page.html", {
         "band_name": band.band_name,
         "biography": band.biography,
@@ -238,5 +269,57 @@ def band_page(request, band_to_look):
         "band_logo": base64.b64encode(band.band_logo.read()).decode('utf-8'),
         "band_img": base64.b64encode(band.band_img.read()).decode('utf-8'),
         "song_1": song_1,
-        "songs": songs
+        "songs": songs,
+        "band_id": band.id,
+        "is_user": is_user,
+        "is_follower": is_follower
         })
+
+
+def new_event(request):
+    if request.method == "POST":
+        place_in = request.user
+        date_in = request.POST["date"]
+        cost_in = request.POST["cost"]
+
+        adults_in = None
+        try:
+            request.POST["adults"]
+            adults_in = True
+        except:
+            adults_in = False
+
+        date_time = datetime.datetime(*[int(v) for v in date_in.replace('T', '-').replace(':', '-').split('-')])
+        bands_in = request.POST.getlist("bands")
+        info_in = request.POST["info"]
+
+        myUser_place = MyUser.objects.filter(user=place_in).first()
+        place = Owner.objects.filter(user=myUser_place).first()
+        date = datetime.date(date_time.year, date_time.month, date_time.day) 
+        time = datetime.time(date_time.hour, date_time.minute) 
+        cost = float(cost_in)
+
+        new_event = Event(place=place, date=date, time=time, cost=cost, adult=adults_in, info=info_in, is_confirmed=False)
+        new_event.save()
+
+        for band_id in bands_in:
+            band = Rocker.objects.filter(id=int(band_id)).first()
+            new_band_by_event = Band_by_event(event=new_event, band=band, is_confirmed=False)
+            new_band_by_event.save()
+        
+    return events(request)
+
+
+def posts(request):
+    start = int(request.GET.get("start") or 0)
+    end = int(request.GET.get("end") or (start + 9))
+
+    # Generate list of posts
+    data = []
+    for i in range(start, end + 1):
+        data.append(f"Post #{i}")
+
+    # Return list of posts
+    return JsonResponse({
+        "posts": data,
+})

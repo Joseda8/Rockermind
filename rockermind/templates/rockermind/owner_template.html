@@ -8,8 +8,10 @@ Rockermind
 
 {% block head %}
 
+
 <link href="{% static 'rockermind/style/post.css' %}" rel="stylesheet">
-<script src="{% static 'rockermind/javascript/owner.js' %}"></script>
+{% block owner_head %}
+{% endblock %}
   
   {% if message %}
   <script>

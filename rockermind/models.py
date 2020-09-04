@@ -42,4 +42,18 @@ class Owner(models.Model):
     place_name = models.CharField(max_length=30)
     location = models.TextField(max_length=800)
     place_img = models.ImageField(upload_to = 'places/', default = 'places/None/no-img.jpg')
+
+class Event(models.Model):
+    place = models.ForeignKey(Owner, on_delete=models.CASCADE, related_name="events")
+    date = models.DateField()
+    time = models.TimeField() 
+    cost = models.FloatField()
+    adult = models.BooleanField()
+    info = models.TextField(max_length=1024, blank=True)
+    is_confirmed = models.BooleanField()
+
+class Band_by_event(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="bands")
+    band = models.ForeignKey(Rocker, on_delete=models.CASCADE, related_name="events")
+    is_confirmed = models.BooleanField()
     
