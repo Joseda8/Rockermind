@@ -165,7 +165,10 @@ def search_band(request):
 
 def events(request):
     all_bands = Rocker.objects.all()
-    all_events = Event.objects.all()
+    all_events = Event.objects.all().order_by('date').order_by('time')
+
+    #Reserved.objects.filter(client=client_id).order_by('-check_in')
+
     bands = []
     events = []
 
@@ -200,8 +203,25 @@ def events(request):
         })
 
 def profile(request):
-    print("PROFILE")
-    return render_page_by_role(request)
+    try:
+        my_user = MyUser.objects.filter(user=request.user).first()
+        current_user_role = my_user.role.role
+    except:
+        pass
+    if not request.user.is_authenticated:
+        return render(request, "rockermind/index.html", {"message": None})
+    elif(current_user_role=="Fan"):
+        pass
+    elif(current_user_role=="Rockstar"):
+        pass
+    elif(current_user_role=="Owner"):
+        place = Owner.objects.filter(user=my_user).first()
+        return render(request, "rockermind/owner_profile.html", {
+            "message": None,
+            "place_name": place.place_name,
+            "place_img": base64.b64encode(place.place_img.read()).decode('utf-8'),
+            "location": place.location
+            })
 
 
 def get_bands(request):
