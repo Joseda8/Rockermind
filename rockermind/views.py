@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.core.files.storage import FileSystemStorage
 from django.urls import reverse
 
-from .models import Genre, Role, MyUser, Fan, Rocker, Owner, Event, Band_by_event
+from .models import Genre, Role, MyUser, Fan, Rocker, Owner, Event, Band_by_event, Post
 import time
 import json
 import random
@@ -323,6 +323,25 @@ def new_event(request):
             new_band_by_event.save()
         
     return events(request)
+
+
+def create_post(request):
+    myUser_band = MyUser.objects.filter(user=request.user).first()
+    date_time = datetime.datetime.now()
+
+    band = Rocker.objects.filter(user=myUser_band).first()
+    post_info = request.POST["post_info"]
+    post_img = request.FILES["post_img"]
+    post_date = datetime.date(date_time.year, date_time.month, date_time.day) 
+    post_time = datetime.time(date_time.hour, date_time.minute, date_time.second) 
+
+    print(band.band_name)
+    print(post_info)
+    print(post_img)
+    print(post_date)
+    print(post_time)
+
+    return render_page_by_role(request)
 
 
 def posts(request):

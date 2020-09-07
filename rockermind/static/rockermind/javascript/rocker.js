@@ -1,3 +1,18 @@
+function loadImg(event, location){
+    var image = document.getElementById(location);
+    image.src = URL.createObjectURL(event.target.files[0]);
+}
+
+function check_fields_post_form(){
+    const submit = document.querySelector('#new_post_btn');
+    const post_info = document.querySelector('#post_info');
+    if (post_info.value.length > 0 && post_info.value.length <= 800) {
+      submit.disabled = false;
+    }else{
+      submit.disabled = true;
+    }
+  }
+
 // Start with first post
 let counter = 1;
 
@@ -5,7 +20,14 @@ let counter = 1;
 const quantity = 20;
 
 // When DOM loads, render the first 20 posts
-document.addEventListener('DOMContentLoaded', load);
+document.addEventListener('DOMContentLoaded', function() {
+    const submit = document.querySelector('#new_post_btn');
+    submit.disabled = true;
+    
+    load();
+    document.addEventListener('keyup', check_fields_post_form);
+});
+
 
 // If scrolled to bottom, load the next 20 posts
 window.onscroll = () => {

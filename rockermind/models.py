@@ -20,12 +20,6 @@ class MyUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name="users")
 
-class Fan(models.Model):
-    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name="fans")
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
-    tastes = models.ForeignKey(Genre, blank=True, on_delete=models.CASCADE, related_name="fans")
-
 class Rocker(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name="bands")
     band_name = models.CharField(max_length=30)
@@ -36,6 +30,21 @@ class Rocker(models.Model):
     url_song_1 = models.CharField(max_length=250, blank=True)
     url_song_2 = models.CharField(max_length=250, blank=True)
     url_song_3 = models.CharField(max_length=250, blank=True)
+
+class Post(models.Model):
+    band = models.ForeignKey(Rocker, on_delete=models.CASCADE, related_name="posts")
+    post_info = models.TextField(max_length=800)
+    post_img = models.ImageField(upload_to = 'posts/', default = 'posts/None/no-img.jpg', blank=True)
+    date = models.DateField()
+    time = models.TimeField()
+
+class Fan(models.Model):
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name="fans")
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
+    tastes = models.ForeignKey(Genre, blank=True, on_delete=models.CASCADE, related_name="fans")
+    posts_like = models.ManyToManyField(Post, blank=True, related_name="fans_likes")
+    posts_love = models.ManyToManyField(Post, blank=True, related_name="fans_loves")
 
 class Owner(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name="owners")
@@ -56,4 +65,5 @@ class Band_by_event(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="bands")
     band = models.ForeignKey(Rocker, on_delete=models.CASCADE, related_name="events")
     is_confirmed = models.BooleanField()
+
     

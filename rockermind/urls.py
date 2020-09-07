@@ -17,4 +17,5 @@ urlpatterns = [
     path("follower/<int:band_to_follow>", views.follower, name="follower"),
     path("band_page/<int:band_to_look>", views.band_page, name="band_page"),
     path("new_event", views.new_event, name="new_event"),
+    path("create_post", views.create_post, name="create_post"),
 ]

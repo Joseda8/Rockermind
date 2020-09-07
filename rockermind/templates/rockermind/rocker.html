@@ -9,6 +9,29 @@
 
 {% block rocker_body %}
 
+<div class="post" id="form_new_post" style="margin-top:50px; margin-bottom: 50px;">
+    <form action="{% url 'rockermind:create_post' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h1>Create post</h1>
+        <br>
+        <h5>What do you want to tell your fans?</h5>
+        <textarea class="form-control" name="post_info" placeholder="Information about the event" rows="4" id="post_info"></textarea>
+        <br>
+
+
+        <h5>Do you want to show them something?</h5>
+        <input id="post_img" name="post_img" type="file" onchange="loadImg(event, 'post_img_to_show')">
+        <br>
+        <br>
+
+        <img id="post_img_to_show" width="200px">
+      
+        <button class="btn btn-primary btn-lg btn-block" id="new_post_btn"
+                style="margin-top: 25px; margin-bottom: 10px; background-color: #0E1427; border-color: #0E1427;">
+                Post</button>
+    </form>
+</div>
+
 <div id="posts">
 </div>
 
