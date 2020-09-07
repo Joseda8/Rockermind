@@ -22,7 +22,7 @@ def render_page_by_role(request):
     elif(current_user_role=="Fan"):
         pass
     elif(current_user_role=="Rockstar"):
-        pass
+        return render(request, "rockermind/rocker.html", {"message": None})
     elif(current_user_role=="Owner"):
         return render(request, "rockermind/owner.html", {"message": None})
 
@@ -41,12 +41,7 @@ def index(request):
                 return render(request, "rockermind/index.html", {"message": f"User {username} exist but the role is not {role}"})
             login(request, user)
 
-            if(role=="Fan"):
-                return render(request, "rockermind/index_template.html")
-            elif(role=="Rockstar"):
-                return render(request, "rockermind/index_template.html")
-            elif(role=="Owner"):
-                return render(request, "rockermind/owner.html")
+            return render_page_by_role(request)
             
         else:
             return render(request, "rockermind/index.html", {"message": f"The user {username} or its password are wrong"})

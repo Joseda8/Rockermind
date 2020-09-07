@@ -7,7 +7,11 @@ Rockermind
 {% endblock %}
 
 {% block head %}
-  <script src="{% static 'rockermind/javascript/welcome.js' %}"></script>
+
+
+<link href="{% static 'rockermind/style/post.css' %}" rel="stylesheet">
+{% block rocker_head %}
+{% endblock %}
   
   {% if message %}
   <script>
@@ -18,46 +22,35 @@ Rockermind
 
 
 {% block options %}
+
 <div class="col d-flex justify-content-center">
-    <a href="{% url 'rockermind:motivation' %}">Motivation</a>
+  <a href="{% url 'rockermind:index' %}">Posts</a>
 </div>
+
 <div class="col d-flex justify-content-center">
-    <a style="cursor:pointer;" data-toggle="modal" data-target="#cartModal">
-        Show me a band</a>
+  <a href="{% url 'rockermind:index' %}">Events</a>
 </div>
+
 <div class="col d-flex justify-content-center">
-    <a style="cursor:pointer;" onclick="openForm()">Sign in</a>
+    <a href="{% url 'rockermind:index' %}">Profile</a>
+  </div>
+
+<div class="col d-flex justify-content-center">
+  <a style="cursor:pointer;" data-toggle="modal" data-target="#cartModal">
+    <img id="logo" src="{% static 'rockermind/images/notification.png' %}" alt="Notifications" 
+    style="width: 32px;">
+  </a>
 </div>
+
 <div class="col d-flex justify-content-center">
-    <a href="{% url 'rockermind:sign_up' %}">Sign up</a>
+    <a href="{% url 'rockermind:logout' %}">Logout</a>
 </div>
 {% endblock %}
 
 {% block body %}
 
-<div class="form-popup" id="myForm">
-    <form action="{% url 'rockermind:index' %}" method="post" class="form-container">
-        {% csrf_token %}
-        <h1>Login</h1>
 
-        <label for="email"><b>Username</b></label>
-        <input type="text" placeholder="Enter Username" name="username" required>
-
-        <label for="psw"><b>Password</b></label>
-        <input type="password" placeholder="Enter Password" name="password" required>
-
-        <select class="form-control" name="role" style="margin-bottom: 25px;">
-            <option value="Fan">Fan</option>
-            <option value="Rockstar">Rocker</option>
-            <option value="Owner">Place Owner</option>
-        </select>
-
-        <button type="submit" class="btn">Login</button>
-        <button type="button" class="btn cancel" id="close_login" onclick="closeForm()">Close</button>
-    </form>
-</div>
-
-{% block welcome_body %}
+{% block rocker_body %}
 {% endblock %}
 
 <!-- Pop-Up -->
