@@ -352,7 +352,7 @@ def get_band_posts(request):
     start = int(request.GET.get("start"))-1
     end = int(request.GET.get("end"))
 
-    band_posts = Post.objects.filter(band=band).order_by('date').order_by('time')[start:end]
+    band_posts = Post.objects.filter(band=band).order_by('-date').order_by('-time')[start:end]
 
     posts_to_send = []
     for post in band_posts:
