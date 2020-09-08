@@ -331,17 +331,52 @@ def create_post(request):
 
     band = Rocker.objects.filter(user=myUser_band).first()
     post_info = request.POST["post_info"]
-    post_img = request.FILES["post_img"]
+    post_img = None
+    try:
+        post_img = request.FILES["post_img"]
+    except:
+        pass
     post_date = datetime.date(date_time.year, date_time.month, date_time.day) 
     post_time = datetime.time(date_time.hour, date_time.minute, date_time.second) 
 
-    print(band.band_name)
-    print(post_info)
-    print(post_img)
-    print(post_date)
-    print(post_time)
+    new_post = Post(band=band, post_info=post_info, post_img=post_img, date=post_date, time=post_time)
+    new_post.save()
 
     return render_page_by_role(request)
+
+
+def get_band_posts(request):
+    myUser_band = MyUser.objects.filter(user=request.user).first()
+    band = Rocker.objects.filter(user=myUser_band).first()
+
+    start = int(request.GET.get("start"))-1
+    end = int(request.GET.get("end"))
+
+    band_posts = Post.objects.filter(band=band).order_by('date').order_by('time')[start:end]
+
+    posts_to_send = []
+    for post in band_posts:
+        time_minutes = post.time.minute
+        post_image = None
+        if(time_minutes<10):
+            time_minutes = "0"+str(time_minutes)
+        try:
+            post_image = base64.b64encode(post.post_img.read()).decode('utf-8')
+        except:
+            pass
+        posts_to_send.append({"band_name": post.band.band_name, 
+        "band_id": post.band.id,
+        "post_info": post.post_info,
+        "post_img": post_image,
+        "date": f"{post.date.day}/{post.date.month}/{post.date.year}",
+        "time": f"{post.time.hour}:{time_minutes}",
+        "likes": post.fans_likes.count(),
+        "loves": post.fans_loves.count()
+        })
+
+    return JsonResponse({
+        "posts": posts_to_send
+})
 
 
 def posts(request):

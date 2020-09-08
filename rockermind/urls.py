@@ -18,4 +18,5 @@ urlpatterns = [
     path("band_page/<int:band_to_look>", views.band_page, name="band_page"),
     path("new_event", views.new_event, name="new_event"),
     path("create_post", views.create_post, name="create_post"),
+    path("get_band_posts", views.get_band_posts, name="get_band_posts"),
 ]
