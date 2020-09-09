@@ -25,9 +25,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 body: JSON.stringify(data),
                 headers: { "X-CSRFToken": csrftoken },
+            }).then(response => response.json())
+            .then(data => {
+                if(data==200){
+                    location.reload()
+                }
             })
-
-            location.reload()
         }
     });
 

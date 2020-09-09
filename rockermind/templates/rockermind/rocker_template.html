@@ -36,7 +36,7 @@ Rockermind
   </div>
 
 <div class="col d-flex justify-content-center">
-  <a style="cursor:pointer;" data-toggle="modal" data-target="#cartModal">
+  <a style="cursor:pointer;" data-toggle="modal" data-target="#notificationsModal">
     <img id="logo" src="{% static 'rockermind/images/notification.png' %}" alt="Notifications" 
     style="width: 32px;">
   </a>
@@ -55,30 +55,33 @@ Rockermind
 
 <!-- Pop-Up -->
 <div class="container">
-  <div class="modal fade" id="cartModal" role="dialog">
+  <div class="modal fade" id="notificationsModal" role="dialog">
     <div class="modal-dialog">
           <div class="modal-content">
         <div class="modal-header">
-          <h4 class="modal-title">Panucci's Pizza</h4>
+          <h4 class="modal-title">Notifications</h4>
         </div>
         <div class="modal-body">
-          <h3 id="modal_info" style="font-weight: bold;">Products in your cart: </h3>
-          <br>
-          <br>
 
-          <div id="buy_resume">
+          <div id="notifications">
+            <ul class="list-group">
+              {% if notifications %}
+                {% for notification in notifications %}
+                    <li class="list-group-item">
+                      <a class="band_ref" href="/rockermind/delete_notif/{{ notification.id }}"> <h5>{{ notification.content }}</h5> </a>
+                      <span>{{ notification.time }} {{ notification.date }}</span>
+                    </li>
+                {% endfor %}
+              {% else %}
+                <h5>You don't have notifications</h5>
+              {% endif %}
+            </ul>
           </div>
           
         </div>
         <div class="modal-footer">
-          <button id="clear_cart_btn" type="button" class="btn btn-default" data-dismiss="modal"
-          style="background-color: #2fd6d6; border-color: #2fd6d6;">Clear cart</button>
-
-          <button type="button" class="btn btn-default" data-dismiss="modal"
-          style="margin-left: 210px;">Close</button>
-
-          <button id="cart_view_btn" class="btn btn-default"
-          style="background-color: #e93015; border-color: #e93015;">Accept</button>
+          <button id="cart_view_btn" class="btn btn-default" data-dismiss="modal"
+          style="background-color: #4FC9EE; border-color: #4FC9EE;">Close</button>
         </div>
       </div>
       

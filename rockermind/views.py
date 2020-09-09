@@ -5,17 +5,47 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.core.files.storage import FileSystemStorage
 from django.urls import reverse
 
-from .models import Genre, Role, MyUser, Fan, Rocker, Owner, Event, Band_by_event, Post
+from .models import Genre, Role, MyUser, Fan, Rocker, Owner, Event, Band_by_event, Post, Notification
 import time
 import json
 import random
 import base64
 import datetime
 
+
+def create_notification(notif_user, notif_content):
+    date_time = datetime.datetime.now()
+    notif_date = datetime.date(date_time.year, date_time.month, date_time.day) 
+    notif_time = datetime.time(date_time.hour, date_time.minute, date_time.second) 
+
+    new_notification = Notification(user=notif_user, date=notif_date, time=notif_time, content=notif_content)
+    new_notification.save()
+
+
+def get_user_notification(myUser):
+    user_notifications = Notification.objects.filter(user=myUser).order_by('date').order_by('time')
+    notifications = []
+    for notif in user_notifications:
+        time_minutes = notif.time.minute
+        if(time_minutes<10):
+            time_minutes = "0"+str(time_minutes)
+        notifications.append({
+            "id": notif.id,
+            "content": notif.content,
+            "date": f"{notif.date.day}/{notif.date.month}/{notif.date.year}",
+            "time": f"{notif.time.hour}:{time_minutes}"
+            })
+    return notifications
+
+
 def render_page_by_role(request):
     current_user_role = None
+    notifications = None
+
     try:
-        current_user_role = MyUser.objects.filter(user=request.user).first().role.role
+        myUser = MyUser.objects.filter(user=request.user).first()
+        current_user_role = myUser.role.role
+        notifications = get_user_notification(myUser)
     except:
         pass
     if not request.user.is_authenticated:
@@ -23,13 +53,12 @@ def render_page_by_role(request):
     elif(current_user_role=="Fan"):
         pass
     elif(current_user_role=="Rockstar"):
-        return render(request, "rockermind/rocker.html", {"message": None})
+        return render(request, "rockermind/rocker.html", {"message": None, "notifications": notifications})
     elif(current_user_role=="Owner"):
-        return render(request, "rockermind/owner.html", {"message": None})
+        return render(request, "rockermind/owner.html", {"message": None, "notifications": notifications})
 
 # Create your views here.
 def index(request):
-
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
@@ -175,6 +204,8 @@ def events(request):
         myUser_rocker = Rocker.objects.filter(user=my_user).first()
         all_events = myUser_rocker.events.all()
 
+        notifications = get_user_notification(my_user)
+
         events_confirmed = []
         events_not_confirmed = []
 
@@ -214,13 +245,16 @@ def events(request):
         return render(request, "rockermind/rocker_events.html", {
             "message": None,
             "events_confirmed": events_confirmed,
-            "events_not_confirmed": events_not_confirmed
+            "events_not_confirmed": events_not_confirmed,
+            "notifications": notifications
             })
 
     elif(current_user_role=="Owner"):
         myUser_place = Owner.objects.filter(user=my_user).first()
         all_bands = Rocker.objects.all()
         all_events = Event.objects.filter(place=myUser_place).order_by('date').order_by('time')
+
+        notifications = get_user_notification(my_user)
 
         bands = []
         events = []
@@ -252,14 +286,18 @@ def events(request):
         return render(request, "rockermind/owner_events.html", {
             "message": None,
             "bands": bands,
-            "events": events
+            "events": events,
+            "notifications": notifications
             })
+
 
 def profile(request):
     current_user_role = None
+    notifications = None
     try:
         my_user = MyUser.objects.filter(user=request.user).first()
         current_user_role = my_user.role.role
+        notifications = get_user_notification(my_user)
     except:
         pass
     if not request.user.is_authenticated:
@@ -274,7 +312,8 @@ def profile(request):
             "message": None,
             "place_name": place.place_name,
             "place_img": base64.b64encode(place.place_img.read()).decode('utf-8'),
-            "location": place.location
+            "location": place.location,
+            "notifications": notifications
             })
 
 
@@ -315,6 +354,11 @@ def get_bands(request):
 def follower(request, band_to_follow):
     print(band_to_follow)
     return render_page_by_role(request)
+
+
+def delete_notif(request, notif_id):
+    Notification.objects.filter(id=notif_id).delete()
+    return HttpResponseRedirect(reverse("rockermind:index"))
 
 
 def band_page(request, band_to_look):
@@ -371,15 +415,24 @@ def new_event(request):
         place = Owner.objects.filter(user=myUser_place).first()
         date = datetime.date(date_time.year, date_time.month, date_time.day) 
         time = datetime.time(date_time.hour, date_time.minute) 
+        time_minutes = time.minute
+        if(time_minutes<10):
+            time_minutes = "0"+str(time_minutes)
         cost = float(cost_in)
 
         new_event = Event(place=place, date=date, time=time, cost=cost, adult=adults_in, info=info_in, is_confirmed=False)
         new_event.save()
 
+        notif_place_content = f"You have created an event on {date.day}/{date.month}/{date.year} at {time.hour}:{time_minutes}"
+        create_notification(myUser_place.user, notif_place_content)
+
         for band_id in bands_in:
             band = Rocker.objects.filter(id=int(band_id)).first()
             new_band_by_event = Band_by_event(event=new_event, band=band, is_confirmed=False)
             new_band_by_event.save()
+
+            notif_band_content = f"You have been invited to an event at {new_event.place.place_name} on {date.day}/{date.month}/{date.year} at {time.hour}:{time_minutes}"
+            create_notification(band.user, notif_band_content)
         
     return events(request)
 
@@ -395,6 +448,7 @@ def create_post(request):
         post_img = request.FILES["post_img"]
     except:
         pass
+
     post_date = datetime.date(date_time.year, date_time.month, date_time.day) 
     post_time = datetime.time(date_time.hour, date_time.minute, date_time.second) 
 
@@ -441,6 +495,7 @@ def get_band_posts(request):
 def band_confirmed_event(request):
     body_unicode = request.body.decode('utf-8')
     body = json.loads(body_unicode)
+    
     event_to_confirm = int(body['event_to_confirm'])
 
     band_by_event = Band_by_event.objects.filter(id=event_to_confirm).first()
@@ -448,18 +503,30 @@ def band_confirmed_event(request):
     band_by_event.save()
 
     event = band_by_event.event
+    myUser_place = event.place
     bands_event = event.bands.all()
-    all_bands_confirmed = None
 
+    time_minutes = event.time.minute
+    if(time_minutes<10):
+        time_minutes = "0"+str(time_minutes)
+
+    notif_place_content = f"{band_by_event.band.band_name} has confirmed the event at {myUser_place.place_name} on {event.date.day}/{event.date.month}/{event.date.year} at {event.time.hour}:{time_minutes}"
+    create_notification(myUser_place.user, notif_place_content)
+
+    all_bands_confirmed = True
     for band in bands_event:
+        notif_band_content = f"{band_by_event.band.band_name} has confirmed the event at {myUser_place.place_name} on {event.date.day}/{event.date.month}/{event.date.year} at {event.time.hour}:{time_minutes}"
+        create_notification(band.band.user, notif_band_content)
+
         if(not band.is_confirmed):
             all_bands_confirmed = False
-            break
-        else:
-            all_bands_confirmed = True
 
     event.is_confirmed = all_bands_confirmed
     event.save()
+
+    if(all_bands_confirmed):
+        notif_place_content = f"Your event on {event.date.day}/{event.date.month}/{event.date.year} at {event.time.hour}:{time_minutes} has been confirmed"
+        create_notification(myUser_place.user, notif_place_content)
 
     return HttpResponse("200")
 

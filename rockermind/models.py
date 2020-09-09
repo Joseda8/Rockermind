@@ -45,6 +45,7 @@ class Fan(models.Model):
     tastes = models.ForeignKey(Genre, blank=True, on_delete=models.CASCADE, related_name="fans")
     posts_like = models.ManyToManyField(Post, blank=True, related_name="fans_likes")
     posts_love = models.ManyToManyField(Post, blank=True, related_name="fans_loves")
+    following = models.ManyToManyField(Rocker, blank=True, related_name="followers")
 
 class Owner(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name="owners")
@@ -66,4 +67,8 @@ class Band_by_event(models.Model):
     band = models.ForeignKey(Rocker, on_delete=models.CASCADE, related_name="events")
     is_confirmed = models.BooleanField()
 
-    
+class Notification(models.Model):
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE, related_name="notifications")
+    date = models.DateField()
+    time = models.TimeField()
+    content = models.TextField(max_length=800)
