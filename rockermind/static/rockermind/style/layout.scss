@@ -25,6 +25,13 @@ body{
         color: $text_color_light;
     }
 
+    .events {
+      color: $text_color_light;
+      margin-top: 25px;
+      margin-left: 50px;
+      margin-right: 50px;
+    }
+
     #motivation, #sign_up_container, .container_profilePage {
         padding: 15px;
         color: $text_color_light;

@@ -3,22 +3,99 @@
 {% load static %}
 
 {% block rocker_head %}
-<script src="{% static 'rockermind/javascript/rocker.js' %}"></script>
+<script src="{% static 'rockermind/javascript/rocker_events.js' %}"></script>
 {% endblock %}
 
 
 {% block rocker_body %}
 
 <div id="events_not_confirmed">
-    NOT CONFIRMED
+    
+    <h1 class="events">Unconfirmed events</h1>
+
+    {% if events_not_confirmed %}
+        {% for event in events_not_confirmed %}
+            <div class="post" style="margin-bottom: 25px;">
+                <h4> {{ event.place_name }} </h4>
+                <img src="data:image/png;base64,{{ event.place_img }}" alt="{{ event.place_name }}" style="width: 200px;">
+                <br>
+                <br>
+                <h5> Date: {{ event.date }} </h5>
+                <h5> Time: {{ event.time }} </h5>
+                <h5> Cost: ${{ event.cost }} </h5>
+                {% if event.adults %}
+                    <h5>Only adults</h5>
+                {% else %}
+                    <h5>For all audiences</h5>
+                {% endif %}
+                <hr>
+
+                <h5>About the show</h5>
+                <p> {{ event.info }} </p>
+                <br>
+
+                <h5>Participating bands</h5>
+                <ul class="list-group">
+                    {% for band in event.bands %}
+                        <li class="list-group-item">
+                            <a class="band_ref" href="/rockermind/band_page/{{ band.band_id }}"> {{ band.band_name }} </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <br>
+
+                <button class="btn btn-primary btn-lg btn-block confirm_event_btn" data-event="{{ event.band_by_event_id }}"
+                style="margin-top: 10px; margin-bottom: 10px; background-color: #0E1427; border-color: #0E1427;">
+                Confirm</button>
+
+            </div>
+        {% endfor %}
+    {% else %}
+        <h3 class="events">There is nothing to show</h3>
+    {% endif %}
 </div>
 
-<div id="events_confirmed">
-    CONFIRMED
+<div id="events_confirmed" style="margin-bottom: 25px;">
+    <h1 class="events">Confirmed events</h1>
+
+    {% if events_confirmed %}
+        {% for event in events_confirmed %}
+            <div class="post" style="margin-bottom: 25px;">
+                <h4> {{ event.place_name }} </h4>
+                <img src="data:image/png;base64,{{ event.place_img }}" alt="{{ event.place_name }}" style="width: 200px;">
+                <br>
+                <br>
+                <h5> Date: {{ event.date }} </h5>
+                <h5> Time: {{ event.time }} </h5>
+                <h5> Cost: ${{ event.cost }} </h5>
+                {% if event.adults %}
+                    <h5>Only adults</h5>
+                {% else %}
+                    <h5>For all audiences</h5>
+                {% endif %}
+                <hr>
+
+                <h5>About the show</h5>
+                <p> {{ event.info }} </p>
+                <br>
+
+                <h5>Participating bands</h5>
+                <ul class="list-group">
+                    {% for band in event.bands %}
+                        <li class="list-group-item">
+                            <a class="band_ref" href="/rockermind/band_page/{{ band.band_id }}"> {{ band.band_name }} </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                <br>
+
+            </div>
+        {% endfor %}
+    {% else %}
+        <h3 class="events">There is nothing to show</h3>
+    {% endif %}
 </div>
 
-<div style="color: white;">
-    {{ events }}
-</div>
+
 
 {% endblock %}

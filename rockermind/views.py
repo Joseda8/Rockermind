@@ -172,11 +172,11 @@ def events(request):
         pass
 
     elif(current_user_role=="Rockstar"):
-        print("EVENTS")
         myUser_rocker = Rocker.objects.filter(user=my_user).first()
         all_events = myUser_rocker.events.all()
 
-        events = []
+        events_confirmed = []
+        events_not_confirmed = []
 
         for event in all_events:
             event_bands_all = event.event.bands.all()
@@ -187,21 +187,34 @@ def events(request):
                     "band_name": band.band.band_name,
                     "band_id": band.band.id
                 })
-            events.append({
+            
+            time_minutes = event.event.time.minute
+            if(time_minutes<10):
+                time_minutes = "0"+str(time_minutes)
+
+            data = {
                 "place_name": event.event.place.place_name, 
                 "place_img": base64.b64encode(event.event.place.place_img.read()).decode('utf-8'),
                 "date": f"{event.event.date.day}/{event.event.date.month}/{event.event.date.year}",
-                "time": f"{event.event.time.hour}:{event.event.time.minute}",
+                "time": f"{event.event.time.hour}:{time_minutes}",
                 "cost": event.event.cost,
                 "adults": event.event.adult,
                 "info": event.event.info,
                 "is_confirmed": event.event.is_confirmed,
+                "band_by_event_id": event.id,
                 "bands": event_bands
-                })
+            }
+
+            if(event.is_confirmed):
+                events_confirmed.append(data)
+            else:
+                events_not_confirmed.append(data)
+
 
         return render(request, "rockermind/rocker_events.html", {
             "message": None,
-            "events": events
+            "events_confirmed": events_confirmed,
+            "events_not_confirmed": events_not_confirmed
             })
 
     elif(current_user_role=="Owner"):
@@ -423,6 +436,32 @@ def get_band_posts(request):
     return JsonResponse({
         "posts": posts_to_send
 })
+
+
+def band_confirmed_event(request):
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    event_to_confirm = int(body['event_to_confirm'])
+
+    band_by_event = Band_by_event.objects.filter(id=event_to_confirm).first()
+    band_by_event.is_confirmed = True
+    band_by_event.save()
+
+    event = band_by_event.event
+    bands_event = event.bands.all()
+    all_bands_confirmed = None
+
+    for band in bands_event:
+        if(not band.is_confirmed):
+            all_bands_confirmed = False
+            break
+        else:
+            all_bands_confirmed = True
+
+    event.is_confirmed = all_bands_confirmed
+    event.save()
+
+    return HttpResponse("200")
 
 
 def posts(request):

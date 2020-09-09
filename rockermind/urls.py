@@ -19,4 +19,5 @@ urlpatterns = [
     path("new_event", views.new_event, name="new_event"),
     path("create_post", views.create_post, name="create_post"),
     path("get_band_posts", views.get_band_posts, name="get_band_posts"),
+    path("band_confirmed_event", views.band_confirmed_event, name="band_confirmed_event"),
 ]
