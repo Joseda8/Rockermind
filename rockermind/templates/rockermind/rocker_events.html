@@ -1,0 +1,24 @@
+{% extends "rockermind/rocker_template.html" %}
+
+{% load static %}
+
+{% block rocker_head %}
+<script src="{% static 'rockermind/javascript/rocker.js' %}"></script>
+{% endblock %}
+
+
+{% block rocker_body %}
+
+<div id="events_not_confirmed">
+    NOT CONFIRMED
+</div>
+
+<div id="events_confirmed">
+    CONFIRMED
+</div>
+
+<div style="color: white;">
+    {{ events }}
+</div>
+
+{% endblock %}

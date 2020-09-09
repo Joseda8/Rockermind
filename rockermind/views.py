@@ -13,6 +13,7 @@ import base64
 import datetime
 
 def render_page_by_role(request):
+    current_user_role = None
     try:
         current_user_role = MyUser.objects.filter(user=request.user).first().role.role
     except:
@@ -159,45 +160,90 @@ def search_band(request):
     })
 
 def events(request):
-    all_bands = Rocker.objects.all()
-    all_events = Event.objects.all().order_by('date').order_by('time')
+    my_user = None
+    current_user_role = None
+    try:
+        my_user = MyUser.objects.filter(user=request.user).first()
+        current_user_role = my_user.role.role
+    except:
+        pass
+    
+    if(current_user_role=="Fan"):
+        pass
 
-    #Reserved.objects.filter(client=client_id).order_by('-check_in')
+    elif(current_user_role=="Rockstar"):
+        print("EVENTS")
+        myUser_rocker = Rocker.objects.filter(user=my_user).first()
+        all_events = myUser_rocker.events.all()
 
-    bands = []
-    events = []
+        events = []
 
-    for band in all_bands:
-        bands.append({"band_name": band.band_name, "band_id": band.id})
+        for event in all_events:
+            event_bands_all = event.event.bands.all()
+            event_bands = []
 
-    for event in all_events:
-        event_bands_all = event.bands.all()
-        event_bands = []
+            for band in event_bands_all:
+                event_bands.append({
+                    "band_name": band.band.band_name,
+                    "band_id": band.band.id
+                })
+            events.append({
+                "place_name": event.event.place.place_name, 
+                "place_img": base64.b64encode(event.event.place.place_img.read()).decode('utf-8'),
+                "date": f"{event.event.date.day}/{event.event.date.month}/{event.event.date.year}",
+                "time": f"{event.event.time.hour}:{event.event.time.minute}",
+                "cost": event.event.cost,
+                "adults": event.event.adult,
+                "info": event.event.info,
+                "is_confirmed": event.event.is_confirmed,
+                "bands": event_bands
+                })
 
-        for band in event_bands_all:
-            event_bands.append({
-                "band_name": band.band.band_name,
-                "band_id": band.band.id
+        return render(request, "rockermind/rocker_events.html", {
+            "message": None,
+            "events": events
             })
-        events.append({
-            "place_name": event.place.place_name, 
-            "place_img": base64.b64encode(event.place.place_img.read()).decode('utf-8'),
-            "date": f"{event.date.day}/{event.date.month}/{event.date.year}",
-            "time": f"{event.time.hour}:{event.time.minute}",
-            "cost": event.cost,
-            "adults": event.adult,
-            "info": event.info,
-            "is_confirmed": event.is_confirmed,
-            "bands": event_bands
-            })
 
-    return render(request, "rockermind/owner_events.html", {
-        "message": None,
-        "bands": bands,
-        "events": events
-        })
+    elif(current_user_role=="Owner"):
+        myUser_place = Owner.objects.filter(user=my_user).first()
+        all_bands = Rocker.objects.all()
+        all_events = Event.objects.filter(place=myUser_place).order_by('date').order_by('time')
+
+        bands = []
+        events = []
+
+        for band in all_bands:
+            bands.append({"band_name": band.band_name, "band_id": band.id})
+
+        for event in all_events:
+            event_bands_all = event.bands.all()
+            event_bands = []
+
+            for band in event_bands_all:
+                event_bands.append({
+                    "band_name": band.band.band_name,
+                    "band_id": band.band.id
+                })
+            events.append({
+                "place_name": event.place.place_name, 
+                "place_img": base64.b64encode(event.place.place_img.read()).decode('utf-8'),
+                "date": f"{event.date.day}/{event.date.month}/{event.date.year}",
+                "time": f"{event.time.hour}:{event.time.minute}",
+                "cost": event.cost,
+                "adults": event.adult,
+                "info": event.info,
+                "is_confirmed": event.is_confirmed,
+                "bands": event_bands
+                })
+
+        return render(request, "rockermind/owner_events.html", {
+            "message": None,
+            "bands": bands,
+            "events": events
+            })
 
 def profile(request):
+    current_user_role = None
     try:
         my_user = MyUser.objects.filter(user=request.user).first()
         current_user_role = my_user.role.role
