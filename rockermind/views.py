@@ -51,11 +51,12 @@ def render_page_by_role(request):
     if not request.user.is_authenticated:
         return render(request, "rockermind/index.html", {"message": None})
     elif(current_user_role=="Fan"):
-        pass
+        return render(request, "rockermind/fan.html", {"message": None})
     elif(current_user_role=="Rockstar"):
         return render(request, "rockermind/rocker.html", {"message": None, "notifications": notifications})
     elif(current_user_role=="Owner"):
         return render(request, "rockermind/owner.html", {"message": None, "notifications": notifications})
+
 
 # Create your views here.
 def index(request):
@@ -353,8 +354,17 @@ def get_bands(request):
 
 
 def follower(request, band_to_follow):
-    print(band_to_follow)
-    return render_page_by_role(request)
+    my_user = MyUser.objects.filter(user=request.user).first()
+    fan = Fan.objects.filter(user=my_user).first()
+    band = Rocker.objects.filter(id=band_to_follow).first()
+
+    following = fan.following.all()
+    if(not (band in following)):
+        fan.following.add(band)
+    else:
+        fan.following.remove(band)
+    fan.save()
+    return HttpResponseRedirect(reverse('rockermind:band_page', args=(int(band_to_follow),)))
 
 
 def delete_notif(request, notif_id):
@@ -374,7 +384,8 @@ def band_page(request, band_to_look):
     song_1 = songs[0]
     songs.remove(songs[0])
 
-    current_user_role = MyUser.objects.filter(user=request.user).first().role.role
+    my_user = MyUser.objects.filter(user=request.user).first()
+    current_user_role = my_user.role.role
     is_user = None
     is_this_band = None
     is_follower = None
@@ -384,10 +395,14 @@ def band_page(request, band_to_look):
     if(current_user_role=="Fan"):
         is_user = True
         is_this_band = False
-        is_follower = "Follow"
+        fan = Fan.objects.filter(user=my_user).first()
+        following = fan.following.all()
+        if(band in following):
+            is_follower = "Stop following"
+        else:
+            is_follower = "Follow"
     elif(current_user_role=="Rockstar"):
         is_user = False
-        my_user = MyUser.objects.filter(user=request.user).first()
         this_band = Rocker.objects.filter(user=my_user).first()
         if(this_band == band):
             is_this_band = True
@@ -399,13 +414,13 @@ def band_page(request, band_to_look):
             band_posts = Post.objects.filter(band=this_band)
             for post in band_posts:
                 likes.append(post.fans_likes.count())
-                loves.append(post.fans_likes.count())
+                loves.append(post.fans_loves.count())
             for num in likes:
                 media_likes += num
             for num in loves:
                 media_loves += num
-            media_likes = media_likes/len(likes)
-            media_loves = media_loves/len(loves)
+            media_likes = round(media_likes/len(likes), 2)
+            media_loves = round(media_loves/len(loves), 2)
             followers = this_band.followers.all().count()
 
     return render(request, "rockermind/band_page.html", {
@@ -562,6 +577,77 @@ def band_confirmed_event(request):
 
     return HttpResponse("200")
 
+
+def get_fan_posts(request):
+    myUser_fan = MyUser.objects.filter(user=request.user).first()
+    fan = Fan.objects.filter(user=myUser_fan).first()
+    fan_bands = fan.following.all()
+    fan_likes = fan.posts_like.all()
+    fan_loves = fan.posts_love.all()
+
+    start = int(request.GET.get("start"))-1
+    end = int(request.GET.get("end"))
+
+    post_to_send_raw = []
+    all_posts = Post.objects.order_by('-date').order_by('-time').all()
+    for post in all_posts:
+        if(post.band in fan_bands):
+            post_to_send_raw.append(post)
+
+    post_to_send_raw = post_to_send_raw[start:end]
+    posts_to_send = []
+    for post in post_to_send_raw:
+        time_minutes = post.time.minute
+        post_image = None
+        if(time_minutes<10):
+            time_minutes = "0"+str(time_minutes)
+        try:
+            post_image = base64.b64encode(post.post_img.read()).decode('utf-8')
+        except:
+            pass
+        posts_to_send.append({"band_name": post.band.band_name, 
+        "band_id": post.band.id,
+        "post_info": post.post_info,
+        "id": post.id,
+        "post_img": post_image,
+        "date": f"{post.date.day}/{post.date.month}/{post.date.year}",
+        "time": f"{post.time.hour}:{time_minutes}",
+        "likes": post.fans_likes.count(),
+        "loves": post.fans_loves.count(),
+        "fan_likes": post in fan_likes,
+        "fan_loves": post in fan_loves,
+        })
+    return JsonResponse({
+        "posts": posts_to_send
+})
+
+def react_to_post(request):
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    post_id = int(body['post_id'])
+    method = body['method']
+
+    my_user = MyUser.objects.filter(user=request.user).first()
+    fan = Fan.objects.filter(user=my_user).first()
+    post = Post.objects.filter(id=post_id).first()
+    fan_likes = fan.posts_like
+    fan_loves = fan.posts_love
+
+    if(method=="like"):
+        if(post in fan_likes.all()):
+            fan_likes.remove(post)
+        else:
+            fan_likes.add(post)
+            fan_loves.remove(post)
+    elif(method=="love"):
+        if(post in fan_loves.all()):
+            fan_loves.remove(post)
+        else:
+            fan_loves.add(post)
+            fan_likes.remove(post)
+
+    fan.save()
+    return HttpResponse("200")
 
 def posts(request):
     start = int(request.GET.get("start") or 0)

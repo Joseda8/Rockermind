@@ -1,0 +1,56 @@
+{% extends "rockermind/index_template.html" %}
+
+{% load static %}
+
+{% block title %}
+Rockermind
+{% endblock %}
+
+{% block head %}
+
+
+<link href="{% static 'rockermind/style/post.css' %}" rel="stylesheet">
+{% block fan_head %}
+{% endblock %}
+  
+  {% if message %}
+  <script>
+    alert("{{message}}");
+  </script>
+  {% endif %}
+{% endblock %}
+
+
+{% block options %}
+
+<div class="col d-flex justify-content-center">
+  <form>
+    <input class="form-control" type="text" autofocus autocomplete="off" id="band_to_search"
+    name="band_to_search" placeholder="Band name">
+    <button class="btn btn-primary btn-md btn-block" id="search_btn"
+    style="margin-top: 5px; width: 200px; background-color: #262926; border-color: #262926;">Search</button>
+  </form>
+</div>
+
+<div class="col d-flex justify-content-center">
+  <a href="{% url 'rockermind:events' %}">Events</a>
+</div>
+
+<div class="col d-flex justify-content-center">
+  <a href="{% url 'rockermind:profile' %}">Profile</a>
+</div>
+
+
+<div class="col d-flex justify-content-center">
+    <a href="{% url 'rockermind:logout' %}">Logout</a>
+</div>
+{% endblock %}
+
+{% block body %}
+
+
+{% block fan_body %}
+{% endblock %}
+
+
+{% endblock %}

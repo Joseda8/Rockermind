@@ -21,4 +21,6 @@ urlpatterns = [
     path("get_band_posts", views.get_band_posts, name="get_band_posts"),
     path("band_confirmed_event", views.band_confirmed_event, name="band_confirmed_event"),
     path("delete_notif/<int:notif_id>", views.delete_notif, name="delete_notif"),
+    path("get_fan_posts", views.get_fan_posts, name="get_fan_posts"),
+    path("react_to_post", views.react_to_post, name="react_to_post"),
 ]

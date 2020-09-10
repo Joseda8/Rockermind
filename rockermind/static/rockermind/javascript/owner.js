@@ -42,11 +42,10 @@ function insert_line_into_HTML(element, mode){
     }else if(mode === "ELEMENT"){
         element.append(line);
     }
-  }
+}
 
 
 let counter = 1;
-
 const quantity = 3;
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -55,6 +54,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if(document.querySelectorAll('.notification').length > 0){
         document.querySelector('#notif_img').style.animationPlayState = 'running';
+    }else{
+        document.querySelector('#notif_img').style.animationPlayState = 'paused';
     }
 
     document.querySelector("#search_btn").onclick = function() {
