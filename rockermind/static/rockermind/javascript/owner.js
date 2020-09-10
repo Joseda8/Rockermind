@@ -44,11 +44,6 @@ function insert_line_into_HTML(element, mode){
     }
   }
 
-function stop_animation(){
-    document.querySelector('#notif_img').style.animationPlayState = 'paused';
-    document.querySelector('#notif_img').style.opacity = "1.0";
-}
-
 
 let counter = 1;
 

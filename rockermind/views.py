@@ -305,7 +305,8 @@ def profile(request):
     elif(current_user_role=="Fan"):
         pass
     elif(current_user_role=="Rockstar"):
-        pass
+        band = Rocker.objects.filter(user=my_user).first()
+        return band_page(request, band.id)
     elif(current_user_role=="Owner"):
         place = Owner.objects.filter(user=my_user).first()
         return render(request, "rockermind/owner_profile.html", {
@@ -375,10 +376,37 @@ def band_page(request, band_to_look):
 
     current_user_role = MyUser.objects.filter(user=request.user).first().role.role
     is_user = None
+    is_this_band = None
     is_follower = None
+    media_likes = None
+    media_loves = None
+    followers = None
     if(current_user_role=="Fan"):
         is_user = True
+        is_this_band = False
         is_follower = "Follow"
+    elif(current_user_role=="Rockstar"):
+        is_user = False
+        my_user = MyUser.objects.filter(user=request.user).first()
+        this_band = Rocker.objects.filter(user=my_user).first()
+        if(this_band == band):
+            is_this_band = True
+            likes = []
+            loves = []
+            media_likes = 0
+            media_loves = 0
+            followers = 0
+            band_posts = Post.objects.filter(band=this_band)
+            for post in band_posts:
+                likes.append(post.fans_likes.count())
+                loves.append(post.fans_likes.count())
+            for num in likes:
+                media_likes += num
+            for num in loves:
+                media_loves += num
+            media_likes = media_likes/len(likes)
+            media_loves = media_loves/len(loves)
+            followers = this_band.followers.all().count()
 
     return render(request, "rockermind/band_page.html", {
         "band_name": band.band_name,
@@ -390,7 +418,11 @@ def band_page(request, band_to_look):
         "songs": songs,
         "band_id": band.id,
         "is_user": is_user,
-        "is_follower": is_follower
+        "is_this_band": is_this_band,
+        "is_follower": is_follower,
+        "media_likes": media_likes,
+        "media_loves": media_loves,
+        "followers": followers
         })
 
 

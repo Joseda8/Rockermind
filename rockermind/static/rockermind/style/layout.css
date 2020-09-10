@@ -1,7 +1,7 @@
 #notif_img {
   animation-name: flicker_animation;
   animation-duration: 1s;
-  animation-iteration-count: infinite;
+  animation-iteration-count: 5;
 }
 
 @keyframes flicker_animation {

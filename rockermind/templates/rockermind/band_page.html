@@ -38,6 +38,13 @@
                     style="background-color: #e0e0e0; border-color: #e0e0e0;">{{ is_follower }}</button>
                 </form>
                 {% endif %}
+
+                {% if is_this_band %}
+                    <hr>
+                    <h5>Likes average in posts: {{ media_likes }}</h5>
+                    <h5>Likes average in posts: {{ media_likes }}</h5>
+                    <h5>Followers: {{ followers }}</h5>
+                {% endif %}
                 <hr>
 
                 <div class="top-content">

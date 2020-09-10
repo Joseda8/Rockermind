@@ -22,11 +22,6 @@ function insert_line_into_HTML(element, mode){
     }
   }
 
-function stop_animation(){
-    document.querySelector('#notif_img').style.animationPlayState = 'paused';
-    document.querySelector('#notif_img').style.opacity = "1.0";
-}
-
 let counter = 1;
 const quantity = 3;
 
@@ -34,8 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if(document.querySelectorAll('.notification').length > 0){
         document.querySelector('#notif_img').style.animationPlayState = 'running';
-    }else{
-        stop_animation();
     }
 
     const submit = document.querySelector('#new_post_btn');
