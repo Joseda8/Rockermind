@@ -42,7 +42,7 @@ Rockermind
 
 <div class="col d-flex justify-content-center">
   <a style="cursor:pointer;" data-toggle="modal" data-target="#notificationsModal">
-    <img id="logo" src="{% static 'rockermind/images/notification.png' %}" alt="Notifications" 
+    <img id="notif_img" src="{% static 'rockermind/images/notification.png' %}" alt="Notifications" 
     style="width: 32px;">
   </a>
 </div>
@@ -73,7 +73,7 @@ Rockermind
               {% if notifications %}
                 {% for notification in notifications %}
                     <li class="list-group-item">
-                      <a class="band_ref" href="/rockermind/delete_notif/{{ notification.id }}"> <h5>{{ notification.content }}</h5> </a>
+                      <a class="band_ref notification" href="/rockermind/delete_notif/{{ notification.id }}"> <h5>{{ notification.content }}</h5> </a>
                       <span>{{ notification.time }} {{ notification.date }}</span>
                     </li>
                 {% endfor %}
@@ -85,7 +85,7 @@ Rockermind
           
         </div>
         <div class="modal-footer">
-          <button id="cart_view_btn" class="btn btn-default" data-dismiss="modal"
+          <button id="cart_view_btn" class="btn btn-default" data-dismiss="modal" onclick="stop_animation()"
           style="background-color: #4FC9EE; border-color: #4FC9EE;">Close</button>
         </div>
       </div>

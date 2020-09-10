@@ -4,6 +4,19 @@ $third_color: #0E1427;
 $fourth_color: #4FC9EE;
 $text_color_light: #fffff5;
 
+
+#notif_img {
+  animation-name: flicker_animation;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+}
+
+@keyframes flicker_animation {  
+  0% { opacity: 1.0; }
+  50% { opacity: 0.0; }
+  100% { opacity: 1.0; }
+}
+
 body{
     background-color: $color_background;
 }
@@ -73,7 +86,6 @@ body{
 
 * {box-sizing: border-box;}
 
-/* Button used to open the contact form - fixed at the bottom of the page */
 .open-button {
   background-color: #555;
   color: white;
@@ -87,7 +99,6 @@ body{
   width: 280px;
 }
 
-/* The popup form - hidden by default */
 .form-popup {
   display: none;
   position: fixed;
@@ -97,14 +108,12 @@ body{
   z-index: 9;
 }
 
-/* Add styles to the form container */
 .form-container {
   max-width: 300px;
   padding: 10px;
   background-color: white;
 }
 
-/* Full-width input fields */
 .form-container input[type=text], .form-container input[type=password] {
   width: 100%;
   padding: 15px;
@@ -113,13 +122,11 @@ body{
   background: #f1f1f1;
 }
 
-/* When the inputs get focus, do something */
 .form-container input[type=text]:focus, .form-container input[type=password]:focus {
   background-color: #ddd;
   outline: none;
 }
 
-/* Set a style for the submit/login button */
 .form-container .btn {
   background-color: $fourth_color;
   color: white;
@@ -137,7 +144,6 @@ body{
 }
 
 
-/* Add some hover effects to buttons */
 .form-container .btn:hover, .open-button:hover {
   opacity: 1;
 }
