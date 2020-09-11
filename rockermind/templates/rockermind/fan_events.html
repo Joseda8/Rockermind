@@ -1,0 +1,45 @@
+{% extends "rockermind/fan_template.html" %}
+
+{% load static %}
+
+{% block fan_head %}
+<script src="{% static 'rockermind/javascript/fan.js' %}"></script>
+{% endblock %}
+
+
+{% block fan_body %}
+
+{% for event in events %}
+    <div class="post" style="margin-bottom: 25px;">
+        <h4> {{ event.place_name }} </h4>
+        <img src="data:image/png;base64,{{ event.place_img }}" alt="{{ event.place_name }}" style="width: 200px;">
+        <br>
+        <br>
+        <h5> Date: {{ event.date }} </h5>
+        <h5> Time: {{ event.time }} </h5>
+        <h5> Cost: ${{ event.cost }} </h5>
+        {% if event.adults %}
+            <h5>Only adults</h5>
+        {% else %}
+            <h5>For all audiences</h5>
+        {% endif %}
+        <hr>
+
+        <h5>About the show</h5>
+        <p> {{ event.info }} </p>
+        <br>
+
+        <h5>Participating bands</h5>
+        <ul class="list-group">
+            {% for band in event.bands %}
+                <li class="list-group-item">
+                    <a class="band_ref" href="/rockermind/band_page/{{ band.band_id }}"> {{ band.band_name }} </a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <br>
+    </div>
+{% endfor %}
+
+{% endblock %}

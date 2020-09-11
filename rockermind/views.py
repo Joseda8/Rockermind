@@ -199,7 +199,46 @@ def events(request):
         pass
     
     if(current_user_role=="Fan"):
-        pass
+        fan = Fan.objects.filter(user=my_user).first()
+        fan_bands = fan.following.all()
+
+        events_to_send_raw = []
+        all_events = Event.objects.order_by('-date').order_by('-time').all()
+        for event in all_events:
+            event_bands = event.bands.all()
+            for band_in_event in event_bands:
+                if(band_in_event.band in fan_bands):
+                    events_to_send_raw.append(event)
+
+        events_to_send = []
+        for event in events_to_send_raw:
+            event_bands_all = event.bands.all()
+            event_bands = []
+
+            if(event.is_confirmed):
+                for band in event_bands_all:
+                    event_bands.append({
+                        "band_name": band.band.band_name,
+                        "band_id": band.band.id
+                    })
+                    
+                events_to_send.append({
+                    "place_name": event.place.place_name, 
+                    "place_img": base64.b64encode(event.place.place_img.read()).decode('utf-8'),
+                    "date": f"{event.date.day}/{event.date.month}/{event.date.year}",
+                    "time": f"{event.time.hour}:{event.time.minute}",
+                    "cost": event.cost,
+                    "adults": event.adult,
+                    "info": event.info,
+                    "bands": event_bands
+                    })
+
+        return render(request, "rockermind/fan_events.html", {
+            "message": None,
+            "events": events_to_send,
+            })
+
+        return render_page_by_role(request)
 
     elif(current_user_role=="Rockstar"):
         myUser_rocker = Rocker.objects.filter(user=my_user).first()
@@ -304,7 +343,31 @@ def profile(request):
     if not request.user.is_authenticated:
         return render(request, "rockermind/index.html", {"message": None})
     elif(current_user_role=="Fan"):
-        pass
+        fan = Fan.objects.filter(user=my_user).first()
+        fan_first_name = fan.first_name
+        fan_last_name = fan.last_name
+        fan_genre = fan.tastes
+        fan_bands = fan.following.all()
+
+        bands = []
+        for band in fan_bands:
+            favorite = None
+            if(fan_genre == band.genres):
+                favorite = True
+            bands.append({
+                "band_name": band.band_name, 
+                "band_id": band.id,
+                "favorite": favorite
+            })
+
+        return render(request, "rockermind/fan_profile.html", {
+            "message": None,
+            "first_name": fan_first_name,
+            "last_name": fan_last_name,
+            "genre": fan_genre,
+            "following": bands
+            })
+            
     elif(current_user_role=="Rockstar"):
         band = Rocker.objects.filter(user=my_user).first()
         return band_page(request, band.id)
@@ -392,11 +455,14 @@ def band_page(request, band_to_look):
     media_likes = None
     media_loves = None
     followers = None
+    recommended = None
     if(current_user_role=="Fan"):
         is_user = True
         is_this_band = False
         fan = Fan.objects.filter(user=my_user).first()
         following = fan.following.all()
+        if(fan.tastes == band.genres):
+            recommended = True
         if(band in following):
             is_follower = "Stop following"
         else:
@@ -437,7 +503,8 @@ def band_page(request, band_to_look):
         "is_follower": is_follower,
         "media_likes": media_likes,
         "media_loves": media_loves,
-        "followers": followers
+        "followers": followers,
+        "recommended": recommended
         })
 
 
@@ -649,16 +716,21 @@ def react_to_post(request):
     fan.save()
     return HttpResponse("200")
 
-def posts(request):
-    start = int(request.GET.get("start") or 0)
-    end = int(request.GET.get("end") or (start + 9))
 
-    # Generate list of posts
-    data = []
-    for i in range(start, end + 1):
-        data.append(f"Post #{i}")
+def get_random_band(request):
 
-    # Return list of posts
+    all_bands = Rocker.objects.all()
+
+    band = all_bands[random.randint(0, len(all_bands)-1)]
+
+    songs_to_analize = [band.url_song_1, band.url_song_2, band.url_song_3]
+    songs = []
+    for song in songs_to_analize:
+        if(song!="NOT_SONG"):
+            songs.append(song.replace("watch?v=", "embed/"))
+
+    song = songs[random.randint(0, len(songs)-1)]
     return JsonResponse({
-        "posts": data,
-})
+        "band_name": band.band_name,
+        "song": song
+        })

@@ -9,7 +9,6 @@ urlpatterns = [
     path("sign_up", views.sign_up, name="sign_up"),
     path("logout", views.do_logout, name="logout"),
     path("get_genres", views.get_genres, name="get_genres"),
-    path("posts", views.posts, name="posts"),
     path("search_band", views.search_band, name="search_band"),
     path("events", views.events, name="events"),
     path("profile", views.profile, name="profile"),
@@ -23,4 +22,5 @@ urlpatterns = [
     path("delete_notif/<int:notif_id>", views.delete_notif, name="delete_notif"),
     path("get_fan_posts", views.get_fan_posts, name="get_fan_posts"),
     path("react_to_post", views.react_to_post, name="react_to_post"),
+    path("get_random_band", views.get_random_band, name="get_random_band"),
 ]

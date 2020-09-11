@@ -30,7 +30,18 @@ function loadImg(event, location){
 
 function openForm() {
     document.getElementById("myForm").style.display = "block";
-  }
+}
+
+function getRandom_band() {
+  const random_band_name = document.querySelector('#random_band_name');
+  const random_band_song = document.querySelector('#random_band_song');
+  fetch(`/rockermind/get_random_band`)
+  .then(response => response.json())
+  .then(data => {
+      random_band_name.innerHTML = "A random song by "+data.band_name;
+      random_band_song.setAttribute("src", data.song);
+  });
+}
   
 function closeForm() {
   document.getElementById("myForm").style.display = "none";

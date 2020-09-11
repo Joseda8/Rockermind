@@ -32,11 +32,16 @@
                 <h5>{{ band_name }} is a {{ genre }} band</h5>
 
                 {% if is_user %}
-                <form action="/rockermind/follower/{{ band_id }}" method="post" style="padding-top: 10px;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-default"
-                    style="background-color: #e0e0e0; border-color: #e0e0e0;">{{ is_follower }}</button>
-                </form>
+
+                    {% if recommended %}
+                        <h5 style="color: goldenrod;">You would like this band</h5>
+                    {% endif %}
+
+                    <form action="/rockermind/follower/{{ band_id }}" method="post" style="padding-top: 10px;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-default"
+                        style="background-color: #e0e0e0; border-color: #e0e0e0;">{{ is_follower }}</button>
+                    </form>
                 {% endif %}
 
                 {% if is_this_band %}

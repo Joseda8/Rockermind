@@ -1,0 +1,37 @@
+{% extends "rockermind/fan_template.html" %}
+
+{% load static %}
+
+{% block fan_head %}
+<script src="{% static 'rockermind/javascript/fan.js' %}"></script>
+{% endblock %}
+
+
+{% block fan_body %}
+
+<div class="container_profilePage" style="margin-top:50px; margin-bottom: 50px;">
+
+    <h1>Hello {{ first_name }} {{ last_name }}!</h1>
+    <br>
+    <h5>Your favorite genre is: {{ genre }}</h5>
+    <br>
+    <br>
+
+    <h3>Bands you follow</h3>
+    <ul class="list-group">
+        {% for band in following %}
+            <li class="list-group-item">
+                <a class="band_ref" href="/rockermind/band_page/{{ band.band_id }}"> {{ band.band_name }} </a>
+                {% if band.favorite %}
+                    <p style="font-size:12px; color: goldenrod; margin-bottom: 0px;">This band has your favorite genre</p>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <br>
+
+
+</div>
+
+{% endblock %}
