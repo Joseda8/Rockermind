@@ -1,3 +1,10 @@
+Rockermind es un sitio en que si eres un Fan puedes conocer nuevas bandas, su música y lugares en 
+donde tocan. Puedes seguir sus publicaciones, reaccionar a ellas, ver sus próximos eventos y
+escuchar un poco de su música. Si eres un rockero puedes hacer publicaciones, ver tus estadísticas 
+de popularidad y acordar conciertos. Mientras que si eres el dueño de un local, puedes crear nuevos
+eventos y contratar bandas para que toquen en ellos.
+
+
 En razón de lograr un proyecto suficientemente diferente a los demás, especificamente del proyecto
 4 de la red social, debo señalar que la complejidad y enfoque de Rockermind no está en el manejo de
 los post. Si no más bien en el manejo de roles por usuario y la interacción entre ellos, esto 

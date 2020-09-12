@@ -174,7 +174,7 @@ def search_band(request):
     similar_bands = []
 
     for band in all_bands:
-        if(band_to_search in band.band_name):
+        if(band_to_search.upper() in band.band_name.upper()):
             similar_bands.append(band)
 
     bands_to_send = []
@@ -291,7 +291,7 @@ def events(request):
 
     elif(current_user_role=="Owner"):
         myUser_place = Owner.objects.filter(user=my_user).first()
-        all_bands = Rocker.objects.all()
+        all_bands = Rocker.objects.all().order_by('band_name')
         all_events = Event.objects.filter(place=myUser_place).order_by('date').order_by('time')
 
         notifications = get_user_notification(my_user)
