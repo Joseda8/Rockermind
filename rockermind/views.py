@@ -23,7 +23,7 @@ def create_notification(notif_user, notif_content):
 
 
 def get_user_notification(myUser):
-    user_notifications = Notification.objects.filter(user=myUser).order_by('-date').order_by('-time')
+    user_notifications = Notification.objects.filter(user=myUser).order_by('-date', '-time')
     notifications = []
     for notif in user_notifications:
         time_minutes = notif.time.minute
@@ -189,6 +189,7 @@ def search_band(request):
         "bands": bands_to_send
     })
 
+
 def events(request):
     my_user = None
     current_user_role = None
@@ -203,7 +204,7 @@ def events(request):
         fan_bands = fan.following.all()
 
         events_to_send_raw = []
-        all_events = Event.objects.order_by('-date').order_by('-time').all()
+        all_events = Event.objects.order_by('-date', '-time').all()
         for event in all_events:
             event_bands = event.bands.all()
             for band_in_event in event_bands:
@@ -297,7 +298,7 @@ def events(request):
     elif(current_user_role=="Owner"):
         myUser_place = Owner.objects.filter(user=my_user).first()
         all_bands = Rocker.objects.all().order_by('band_name')
-        all_events = Event.objects.filter(place=myUser_place).order_by('date').order_by('time')
+        all_events = Event.objects.filter(place=myUser_place).order_by('-date', '-time')
 
         notifications = get_user_notification(my_user)
 
@@ -490,8 +491,15 @@ def band_page(request, band_to_look):
                 media_likes += num
             for num in loves:
                 media_loves += num
-            media_likes = round(media_likes/len(likes), 2)
-            media_loves = round(media_loves/len(loves), 2)
+            
+            if(len(likes)==0):
+                media_likes = 0
+            else:
+                media_likes = round(media_likes/len(likes), 2)
+            if(len(loves)==0):
+                media_loves = 0
+            else:
+                media_loves = round(media_loves/len(loves), 2)
             followers = this_band.followers.all().count()
 
     return render(request, "rockermind/band_page.html", {
@@ -584,7 +592,7 @@ def get_band_posts(request):
     start = int(request.GET.get("start"))-1
     end = int(request.GET.get("end"))
 
-    band_posts = Post.objects.filter(band=band).order_by('-date').order_by('-time')[start:end]
+    band_posts = Post.objects.filter(band=band).order_by('-date', '-time')[start:end]
 
     posts_to_send = []
     for post in band_posts:
@@ -662,7 +670,8 @@ def get_fan_posts(request):
     end = int(request.GET.get("end"))
 
     post_to_send_raw = []
-    all_posts = Post.objects.order_by('-date').order_by('-time').all()
+
+    all_posts = Post.objects.order_by('-date', '-time').all()
     for post in all_posts:
         if(post.band in fan_bands):
             post_to_send_raw.append(post)

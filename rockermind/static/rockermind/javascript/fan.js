@@ -36,6 +36,7 @@ const quantity = 3;
 
 document.addEventListener('DOMContentLoaded', function() {
 
+    counter = 1;
     load();
     
     if(document.querySelectorAll('.notification').length > 0){
