@@ -23,7 +23,7 @@ def create_notification(notif_user, notif_content):
 
 
 def get_user_notification(myUser):
-    user_notifications = Notification.objects.filter(user=myUser).order_by('date').order_by('time')
+    user_notifications = Notification.objects.filter(user=myUser).order_by('-date').order_by('-time')
     notifications = []
     for notif in user_notifications:
         time_minutes = notif.time.minute
@@ -207,7 +207,7 @@ def events(request):
         for event in all_events:
             event_bands = event.bands.all()
             for band_in_event in event_bands:
-                if(band_in_event.band in fan_bands):
+                if((band_in_event.band in fan_bands) and not (event in events_to_send_raw)):
                     events_to_send_raw.append(event)
 
         events_to_send = []
@@ -221,16 +221,21 @@ def events(request):
                         "band_name": band.band.band_name,
                         "band_id": band.band.id
                     })
+
+                time_minutes = event.time.minute
+                if(time_minutes<10):
+                    time_minutes = "0"+str(time_minutes)
                     
                 events_to_send.append({
                     "place_name": event.place.place_name, 
                     "place_img": base64.b64encode(event.place.place_img.read()).decode('utf-8'),
                     "date": f"{event.date.day}/{event.date.month}/{event.date.year}",
-                    "time": f"{event.time.hour}:{event.time.minute}",
+                    "time": f"{event.time.hour}:{time_minutes}",
                     "cost": event.cost,
                     "adults": event.adult,
                     "info": event.info,
-                    "bands": event_bands
+                    "bands": event_bands,
+                    "is_confirmed": event.is_confirmed
                     })
 
         return render(request, "rockermind/fan_events.html", {
@@ -538,7 +543,7 @@ def new_event(request):
         new_event.save()
 
         notif_place_content = f"You have created an event on {date.day}/{date.month}/{date.year} at {time.hour}:{time_minutes}"
-        create_notification(myUser_place.user, notif_place_content)
+        create_notification(myUser_place, notif_place_content)
 
         for band_id in bands_in:
             band = Rocker.objects.filter(id=int(band_id)).first()
@@ -639,6 +644,7 @@ def band_confirmed_event(request):
     event.save()
 
     if(all_bands_confirmed):
+        time.sleep(0.5)
         notif_place_content = f"Your event on {event.date.day}/{event.date.month}/{event.date.year} at {event.time.hour}:{time_minutes} has been confirmed"
         create_notification(myUser_place.user, notif_place_content)
 

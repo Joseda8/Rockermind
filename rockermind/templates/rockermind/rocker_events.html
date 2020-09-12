@@ -89,6 +89,12 @@
                 </ul>
                 <br>
 
+                {% if event.is_confirmed %}
+                    <span style="color: green;">This event has been confirmed for all bands</span> 
+                {% else %}
+                    <span style="color: red;">This event has not been confirmed for all bands</span> 
+                {% endif %}
+
             </div>
         {% endfor %}
     {% else %}
