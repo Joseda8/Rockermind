@@ -14,6 +14,13 @@ function checFields_newEvent_form(){
   }
 
 document.addEventListener('DOMContentLoaded', function() {
+
+    if(document.querySelectorAll('.notification').length > 0){
+        document.querySelector('#notif_img').style.animationPlayState = 'running';
+    }else{
+        document.querySelector('#notif_img').style.animationPlayState = 'paused';
+    }
+    
     const new_event_btn = document.querySelector('#new_event_btn');
     new_event_btn.disabled = true;
 

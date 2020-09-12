@@ -110,6 +110,7 @@ function check_fields_owner_sign_up(){
 
 function show_fan_signUp_form(genres){
   insert_line_into_HTML("#sign_up_form");
+  insert_line_into_HTML("#sign_up_form");
 
   const first_name_lbl = document.createElement('label');
   first_name_lbl.innerHTML = "First name";
@@ -126,6 +127,7 @@ function show_fan_signUp_form(genres){
   document.querySelector('#sign_up_form').append(first_name_input);
 
   insert_line_into_HTML("#sign_up_form");
+  insert_line_into_HTML("#sign_up_form");
 
   const last_name_lbl = document.createElement('label');
   last_name_lbl.innerHTML = "Last name";
@@ -141,6 +143,7 @@ function show_fan_signUp_form(genres){
   last_name_input.setAttribute("id", "last_name");
   document.querySelector('#sign_up_form').append(last_name_input);
 
+  insert_line_into_HTML("#sign_up_form");
   insert_line_into_HTML("#sign_up_form");
 
   const label = document.createElement('label');
@@ -164,6 +167,7 @@ function show_fan_signUp_form(genres){
 
 function show_rockstar_signUp_form(genres){
   insert_line_into_HTML("#sign_up_form");
+  
 
   const band_name_lbl = document.createElement('label');
   band_name_lbl.innerHTML = "Band name";

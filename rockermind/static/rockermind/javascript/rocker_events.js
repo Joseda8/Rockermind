@@ -15,6 +15,12 @@ function getCookie(name) {
 
 document.addEventListener('DOMContentLoaded', function() {
 
+    if(document.querySelectorAll('.notification').length > 0){
+        document.querySelector('#notif_img').style.animationPlayState = 'running';
+    }else{
+        document.querySelector('#notif_img').style.animationPlayState = 'paused';
+    }
+
     document.querySelectorAll(".confirm_event_btn").forEach(function(button) {
         button.onclick = function() {
             let data = {
