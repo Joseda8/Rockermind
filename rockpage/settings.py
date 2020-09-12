@@ -25,7 +25,7 @@ SECRET_KEY = '+fyd#hu6l(62usm4+f4rs#iwdx#san$^q#0nn_e0l$hwm%xrh7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['fierce-earth-53714.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
